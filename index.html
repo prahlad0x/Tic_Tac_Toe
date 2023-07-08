@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic Tac Toe</title>
+    <style>
+        body{
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background-color: rgb(211, 212, 213);
+        }
+        #head{
+            margin-top:  0px;
+            font-size: larger;
+            font-family: Arial, Helvetica, sans-serif;
+            width: 100%;
+            position: sticky;
+
+        }
+        
+        #scoreBoard{
+            margin-bottom: 20px;
+            display: flex;
+            /* border: 1px solid red; */
+            border-radius: 5px;
+        }
+        #scoreBoard > div > div{
+            font-size: x-large;
+            font-family: 'Times New Roman', Times, serif;
+            padding: 20px 25px;
+            font-weight:600;
+            /* border:1px solid rgb(211, 202, 192); */
+        }
+
+        #playerX, 
+        #x-score{
+            color: red;
+        }
+
+        #playerO,
+        #o-score{
+            color: green;
+        }
+
+        #turnInfo{
+            font-size: larger;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-weight: 500;
+            margin-bottom: 30px;
+        }
+        #game {
+            display: grid;
+            grid-template-columns: repeat(3,1fr);
+        }
+        .game-box {
+            font-size: larger;
+            font-weight: 600;
+            display: grid;
+            justify-content: center;
+            align-items: center;
+            height: 90px;
+            width: 90px;
+            border: 1px solid rgb(135, 131, 131);
+            margin : 0.5px;
+            cursor :pointer;
+        }
+
+        #status{
+            font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+        }
+
+        #Restart{
+            font-size: x-large;
+            width: 270px;
+            padding: 10px 25px;
+            background-color: rgb(44, 237, 44);
+            /* border-color: rgb(44, 237, 44); */
+            border: 1px solid grey;
+            cursor: pointer;
+            border-radius: 5px;
+            color: white;
+        }
+        #RestartF{
+            margin-top: 40px;
+            font-size: x-large;
+            width: 270px;
+            padding: 10px 25px;
+            background-color: rgb(198, 64, 20);
+            /* border-color: rgb(44, 237, 44); */
+            border: 1px solid grey;
+            cursor: pointer;
+            border-radius: 5px;
+            color: white;
+        }
+         #RestartF:hover{
+            color: red;
+            background-color: white;
+         }
+
+        #Restart:hover{
+            color: black;
+            background-color: aquamarine;
+            border: 1px solid rgb(135, 129, 129);
+        }
+
+        @media screen and (max-width: 600px) {
+            #head {
+                font-size: small;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <div id="head">
+        <h1>Wel-come To Tic Tac Toe</h1>
+        <hr>
+    </div>
+    <div id="scoreBoard">
+        <hr>
+        <div>
+            <hr>
+            <div>Player  </div>
+            <hr>
+            <div> Score </div>
+            <hr>
+        </div>
+        <hr>
+        <div>
+            <hr>
+            <div id="playerX">- X -</div><hr>
+            <div id="x-score">0</div><hr>
+        </div>
+        <hr>
+        <div><hr>
+            <div id="playerO"> - O -</div><hr>
+            <div id="o-score">0</div><hr>
+        </div>
+        <hr>
+    </div>
+    <div>
+        <div id="turnInfo"><h3>Its <span id="player-name"> </span>  Turn</h3></div>
+        <div id="game">
+            <div class="game-box" id="00">-</div>
+            <div class="game-box" id="01">-</div>
+            <div class="game-box" id="02">-</div>
+            <div class="game-box" id="10">-</div>
+            <div class="game-box" id="11">-</div>
+            <div class="game-box" id="12">-</div>
+            <div class="game-box" id="20">-</div>
+            <div class="game-box" id="21">-</div>
+            <div class="game-box" id="22">-</div>
+        </div>
+        <div><h2 id="status"></h2></div>
+        <button id="Restart"> Restart</button>
+    </div>
+    <button id="RestartF"> Restart Full Game</button>
+</body>
+
+<script>
+    const playerTurn = document.getElementById("player-name");
+    const gameStatusInfo = document.getElementById("status")
+    const xScore = document.getElementById("x-score")
+    const oScore = document.getElementById("o-score")
+    let PlayerName = document.getElementById('player-name')
+    const restartBtn = document.getElementById("Restart")
+    const restartFullBtn = document.getElementById("RestartF")
+    const cells = document.querySelectorAll('.game-box')
+
+    const allPossibilities = [ ["00", "01", "02"], ["00", "11", "22"], ["00", "10", "20"], ["01", '11', '21'], ['02', '12', '22'], ['02', '11', '20'], ['10', '11', '12'], ['20', "21", '22']]
+    //default 
+    let Player = "❌"
+    playerTurn.style.color = "red"
+    PlayerName.innerText =(Player == "❌")? "X" :"O" ;
+
+    //game status
+    let gameStatus = true
+
+    for(let cell of cells){
+        cell.addEventListener('click', (e)=>{
+            let flag = false
+            if(cell.innerText == "-") flag = !flag
+            if(gameStatus && flag) displayEntry(e.target.id)
+        })
+    }
+
+    function displayEntry(id){
+        let cell = document.getElementById(`${id}`)
+        cell.innerText = Player;
+        
+        if(checkStatus(Player)){ // checking winnings
+            Player = (Player == "❌")? "🟢" : "❌"
+            PlayerName.innerText = Player;
+            if(gameStatus) setPlayerTurn(Player)
+        }
+    }
+
+    function setPlayerTurn(Player){
+        playerTurn.innerText = (Player == "❌")? "X" :"O";
+        playerTurn.style.color = (Player== "❌")? "red" : "green";
+    }
+
+    function checkStatus(Player){
+        let winner = (Player == "❌")? "X"  : "O"
+        let flag = true
+        for(let possibility of allPossibilities){
+            let [x, y ,z] = possibility
+            let a = document.getElementById(x).innerText 
+            let b = document.getElementById(y).innerText
+            let c = document.getElementById(z).innerText
+
+            if(a == b && b == c && c == Player) {
+                gameStatus = !gameStatus
+                // increase score
+                if(winner == "X")  xScore.innerText = Number(xScore.innerText) + 1; 
+                else oScore.innerText = Number(oScore.innerText) + 1
+                Player = (winner == "X")? "❌" : "🟢"
+                setPlayerTurn(Player)
+                gameStatusInfo.innerText = `Player ${winner} Won The Game 🎉`
+                flag = !flag
+                // setPlayer(Player)
+                return false
+            }
+        }
+        
+        if(flag){
+            for(let i = 0; i<3; i++){
+                for(let j = 0; j<3; j++){
+                    let cellText = document.getElementById(""+i+j).innerText
+                    if(cellText == "-") return true
+                }
+            }
+            gameStatusInfo.innerText = `Match Draw 🙅`
+            gameStatus = !gameStatus
+            return false
+        }
+
+        return true
+    }
+
+    function setPlayer(Player){
+            playerTurn.innerText = (Player == "❌")? "X" :"O" ;
+            playerTurn.style.color = (Player== "❌")? "red" : "green";
+        }
+
+
+    restartBtn.addEventListener('click', restart)
+
+    function restart(){
+        gameStatusInfo.innerText = ""
+        gameStatus = true;
+        for(let cell of cells){
+            cell.innerText = "-"
+        }
+    }
+
+    restartFullBtn.addEventListener('click', ()=>{
+        location.reload()
+    })
+
+</script>
+</html>
